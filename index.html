@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07110f">
+  <meta name="description" content="An interactive, evidence-labelled resolution experiment using a single intrinsically photosensitive retinal ganglion cell.">
+  <title>One neurone, many boundaries</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-layer="0">
+  <a class="skip-link" href="#experiment">Skip to experiment</a>
+
+  <header class="masthead">
+    <a class="wordmark" href="#top" aria-label="One neurone, many boundaries — home">
+      <span class="wordmark-dot" aria-hidden="true"></span>
+      <span>Resolution experiment 01</span>
+    </a>
+    <div class="masthead-meta">
+      <span>M1 ipRGC</span>
+      <span>Evidence-labelled</span>
+      <span>Not a digital twin</span>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="eyebrow">The fly-connectome trick, turned inward</div>
+      <h1 id="hero-title">How much of one neurone disappears before the model looks complete?</h1>
+      <p class="hero-intro">Begin with a point neurone: two changing numbers, static weighted edges and a fitted input current. Then restore the same cell’s spatial, photochemical and intracellular degrees of freedom. Its spike output can remain familiar while the alleged locus of “computation” keeps moving.</p>
+      <div class="hero-facts" aria-label="Anchor facts">
+        <div><strong>Anchor cell</strong><span>M1 intrinsically photosensitive retinal ganglion cell</span></div>
+        <div><strong>Comparison</strong><span>whole-fly point-neurone hardware abstraction</span></div>
+        <div><strong>Claim</strong><span>completeness belongs to a measurement boundary</span></div>
+      </div>
+    </section>
+
+    <section class="experiment" id="experiment" aria-labelledby="experiment-title">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">Interactive specimen</div>
+          <h2 id="experiment-title">Run the same light pulse at seven resolutions</h2>
+        </div>
+        <p>Each step is cumulative. Nothing new happens to the living cell; more of what was already happening becomes representable.</p>
+      </div>
+
+      <div class="lab-grid">
+        <nav class="layer-panel" aria-label="Representation layers">
+          <div class="panel-kicker">Resolution boundary</div>
+          <ol class="layer-list" id="layer-controls">
+            <li><button class="layer-button is-active" type="button" data-layer="0" aria-pressed="true"><span class="layer-number">00</span><span><strong>Connectome node</strong><small>point-neurone</small></span></button></li>
+            <li><button class="layer-button" type="button" data-layer="1" aria-pressed="false"><span class="layer-number">01</span><span><strong>Morphoelectric cell</strong><small>M1 / ipRGC</small></span></button></li>
+            <li><button class="layer-button" type="button" data-layer="2" aria-pressed="false"><span class="layer-number">02</span><span><strong>Intrinsic photoreception</strong><small>M1 / ipRGC</small></span></button></li>
+            <li><button class="layer-button" type="button" data-layer="3" aria-pressed="false"><span class="layer-number">03</span><span><strong>Biochemical state</strong><small>M1 / ipRGC</small></span></button></li>
+            <li><button class="layer-button" type="button" data-layer="4" aria-pressed="false"><span class="layer-number">04</span><span><strong>Intracellular traffic</strong><small>neurone-general</small></span></button></li>
+            <li><button class="layer-button" type="button" data-layer="5" aria-pressed="false"><span class="layer-number">05</span><span><strong>Intracellular light response</strong><small>frontier</small></span></button></li>
+            <li><button class="layer-button" type="button" data-layer="6" aria-pressed="false"><span class="layer-number">06</span><span><strong>Living tissue</strong><small>retinal context</small></span></button></li>
+          </ol>
+        </nav>
+
+        <article class="specimen-panel" aria-labelledby="specimen-title">
+          <header class="specimen-header">
+            <div>
+              <span class="specimen-id">Specimen M1 · composite</span>
+              <h3 id="specimen-title">Current representation</h3>
+            </div>
+            <div class="live-status"><span aria-hidden="true"></span><span id="trial-status" aria-live="polite">Ready</span></div>
+          </header>
+
+          <div class="visual-shell">
+            <svg class="cell-visual" viewBox="0 0 960 590" role="img" aria-labelledby="cell-title cell-desc">
+              <title id="cell-title">A progressively revealed M1 intrinsically photosensitive retinal ganglion cell</title>
+              <desc id="cell-desc">The initial point-neurone symbol expands into a branching retinal ganglion cell with membrane, photoreceptive, biochemical, intracellular and tissue-context layers.</desc>
+              <defs>
+                <radialGradient id="somaGradient" cx="38%" cy="32%" r="70%">
+                  <stop offset="0" stop-color="#b8f5dc" stop-opacity=".95"/>
+                  <stop offset=".5" stop-color="#4bbf9a" stop-opacity=".62"/>
+                  <stop offset="1" stop-color="#11352e" stop-opacity=".92"/>
+                </radialGradient>
+                <linearGradient id="axonGradient" x1="0" x2="1">
+                  <stop offset="0" stop-color="#6bd4ad"/>
+                  <stop offset="1" stop-color="#d7ffef"/>
+                </linearGradient>
+                <filter id="softGlow" x="-100%" y="-100%" width="300%" height="300%">
+                  <feGaussianBlur stdDeviation="7" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+                  <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#b9d7cb" stroke-opacity=".045" stroke-width="1"/>
+                </pattern>
+              </defs>
+
+              <rect width="960" height="590" fill="url(#grid)"/>
+              <g class="visual-guides" aria-hidden="true">
+                <line x1="55" y1="510" x2="905" y2="510"/>
+                <text x="58" y="533">retina · ganglion-cell layer</text>
+                <text x="770" y="533">not to scale</text>
+              </g>
+
+              <g class="exact-layer abstraction-node is-visible" data-exact-layer="0" aria-hidden="true">
+                <line class="edge" x1="110" y1="185" x2="410" y2="295"/>
+                <line class="edge" x1="112" y1="415" x2="410" y2="309"/>
+                <line class="edge edge-out" x1="535" y1="302" x2="850" y2="302"/>
+                <circle class="endpoint" cx="104" cy="183" r="10"/>
+                <circle class="endpoint" cx="106" cy="418" r="10"/>
+                <circle class="node-halo" cx="473" cy="302" r="86"/>
+                <circle class="node" cx="473" cy="302" r="60"/>
+                <text class="node-label" x="473" y="297" text-anchor="middle">V(t)</text>
+                <text class="node-sub" x="473" y="321" text-anchor="middle">g(t)</text>
+                <rect class="edge-weight" x="231" y="211" width="50" height="25" rx="12"/>
+                <text class="weight-label" x="256" y="228" text-anchor="middle">w₁</text>
+                <rect class="edge-weight" x="229" y="386" width="50" height="25" rx="12"/>
+                <text class="weight-label" x="254" y="403" text-anchor="middle">w₂</text>
+                <text class="node-caption" x="473" y="420" text-anchor="middle">one node · two dynamic variables</text>
+              </g>
+
+              <g class="layer-item tissue-context" data-min-layer="6" aria-hidden="true">
+                <path class="glia glia-a" d="M92 168 C158 100 208 124 270 92 S402 54 482 102"/>
+                <path class="glia glia-b" d="M620 105 C682 72 754 96 818 148 S886 220 920 206"/>
+                <path class="capillary" d="M68 455 C210 397 312 468 443 432 S705 382 902 445"/>
+                <g class="extracellular-ions">
+                  <circle cx="184" cy="286" r="4"/><circle cx="278" cy="166" r="3"/><circle cx="715" cy="226" r="4"/>
+                  <circle cx="788" cy="382" r="3"/><circle cx="626" cy="465" r="4"/><circle cx="374" cy="464" r="3"/>
+                </g>
+              </g>
+
+              <g class="layer-item morphology" data-min-layer="1" aria-hidden="true">
+                <g class="dendrites">
+                  <path d="M445 300 C380 279 347 226 305 191 C272 163 235 164 206 137"/>
+                  <path d="M365 245 C328 236 297 251 260 240 C220 227 190 193 149 202"/>
+                  <path d="M301 191 C283 149 246 116 204 103 C172 92 144 99 113 80"/>
+                  <path d="M270 165 C259 124 276 92 266 54"/>
+                  <path d="M445 316 C379 344 346 389 295 411 C245 432 190 420 142 453"/>
+                  <path d="M359 370 C319 364 282 344 241 353 C207 361 183 392 144 388"/>
+                  <path d="M296 411 C281 452 247 478 214 500"/>
+                  <path d="M244 426 C222 444 205 469 180 475"/>
+                  <path d="M508 286 C558 242 601 215 662 202 C714 190 760 210 811 178"/>
+                  <path d="M605 214 C619 171 656 142 691 122 C729 100 761 109 797 82"/>
+                  <path d="M663 202 C701 233 726 261 770 269 C815 278 845 259 884 273"/>
+                  <path d="M506 324 C555 360 602 378 655 385 C716 392 755 373 816 405"/>
+                  <path d="M622 379 C649 420 680 450 724 475"/>
+                  <path d="M655 385 C703 350 754 339 805 351 C843 360 864 389 902 391"/>
+                </g>
+                <path class="axon" d="M489 342 C500 387 523 420 559 449 C614 492 707 507 913 498"/>
+                <circle class="soma" cx="472" cy="304" r="57"/>
+                <circle class="nucleus" cx="461" cy="295" r="25"/>
+                <circle class="nucleolus" cx="455" cy="289" r="7"/>
+              </g>
+
+              <g class="layer-item membrane-state" data-min-layer="1" aria-hidden="true">
+                <circle class="channel channel-a" cx="429" cy="277" r="5"/>
+                <circle class="channel channel-b" cx="515" cy="305" r="5"/>
+                <circle class="channel channel-c" cx="475" cy="360" r="5"/>
+                <circle class="channel channel-d" cx="363" cy="245" r="4"/>
+                <circle class="channel channel-e" cx="603" cy="214" r="4"/>
+                <circle class="channel channel-f" cx="617" cy="379" r="4"/>
+                <path class="voltage-wave" d="M151 202 C220 227 270 218 325 241 S400 283 437 298"/>
+                <path class="voltage-wave delay" d="M508 323 C590 385 677 380 805 405"/>
+              </g>
+
+              <g class="layer-item photoreception" data-min-layer="2" aria-hidden="true">
+                <g class="photons">
+                  <path d="M174 35 L207 128"/><path d="M306 22 L330 151"/><path d="M440 24 L452 228"/>
+                  <path d="M575 28 L566 211"/><path d="M715 34 L682 177"/><path d="M846 36 L811 160"/>
+                </g>
+                <g class="melanopsin-sites">
+                  <circle cx="205" cy="138" r="7"/><circle cx="304" cy="190" r="7"/><circle cx="361" cy="246" r="7"/>
+                  <circle cx="438" cy="280" r="7"/><circle cx="508" cy="286" r="7"/><circle cx="603" cy="214" r="7"/>
+                  <circle cx="662" cy="202" r="7"/><circle cx="769" cy="269" r="7"/><circle cx="654" cy="384" r="7"/>
+                </g>
+              </g>
+
+              <g class="layer-item biochemistry" data-min-layer="3" aria-hidden="true">
+                <path class="cascade" d="M427 291 C403 310 404 340 430 353 C453 364 480 345 472 324 C465 307 445 310 442 325"/>
+                <g class="calcium-pool">
+                  <circle cx="433" cy="337" r="3"/><circle cx="445" cy="349" r="3"/><circle cx="456" cy="337" r="3"/>
+                  <circle cx="414" cy="326" r="3"/><circle cx="458" cy="319" r="3"/><circle cx="430" cy="315" r="3"/>
+                </g>
+                <g class="messengers">
+                  <circle cx="328" cy="233" r="3"/><circle cx="339" cy="243" r="3"/><circle cx="349" cy="252" r="3"/>
+                  <circle cx="585" cy="222" r="3"/><circle cx="597" cy="231" r="3"/><circle cx="609" cy="240" r="3"/>
+                </g>
+              </g>
+
+              <g class="layer-item intracellular" data-min-layer="4" aria-hidden="true">
+                <path class="microtubule" d="M429 286 C383 271 343 226 304 192"/>
+                <path class="microtubule" d="M496 319 C549 357 600 376 652 383"/>
+                <path class="microtubule" d="M486 339 C512 409 589 465 701 486"/>
+                <g class="mitochondria">
+                  <ellipse cx="420" cy="309" rx="15" ry="7" transform="rotate(-28 420 309)"/>
+                  <ellipse cx="540" cy="348" rx="14" ry="6" transform="rotate(24 540 348)"/>
+                  <ellipse cx="620" cy="470" rx="15" ry="6" transform="rotate(12 620 470)"/>
+                  <ellipse cx="346" cy="228" rx="13" ry="6" transform="rotate(34 346 228)"/>
+                </g>
+                <g class="cargo">
+                  <circle cx="365" cy="248" r="5"/><circle cx="563" cy="365" r="5"/><circle cx="658" cy="478" r="5"/>
+                </g>
+              </g>
+
+              <g class="layer-item intracellular-light" data-min-layer="5" aria-hidden="true">
+                <circle class="chromophore-field" cx="420" cy="309" r="27"/>
+                <circle class="chromophore-field delay-a" cx="540" cy="348" r="25"/>
+                <circle class="chromophore-field delay-b" cx="620" cy="470" r="25"/>
+                <circle class="chromophore-field delay-c" cx="346" cy="228" r="24"/>
+                <g class="intracellular-photons">
+                  <circle cx="399" cy="297" r="2"/><circle cx="414" cy="319" r="2"/><circle cx="437" cy="300" r="2"/>
+                  <circle cx="527" cy="343" r="2"/><circle cx="550" cy="354" r="2"/><circle cx="612" cy="466" r="2"/>
+                </g>
+              </g>
+
+              <g class="pulse-packet" aria-hidden="true">
+                <circle cx="515" cy="365" r="7"/><circle cx="515" cy="365" r="15"/><circle cx="515" cy="365" r="23"/>
+              </g>
+            </svg>
+
+            <div class="visual-label label-input"><span>Input boundary</span><strong id="input-label">fitted current</strong></div>
+            <div class="visual-label label-output"><span>Output boundary</span><strong>axon spikes</strong></div>
+          </div>
+
+          <div class="stimulus-console">
+            <label for="light-level"><span>480 nm light pulse</span><output id="light-output" for="light-level">62%</output></label>
+            <input id="light-level" type="range" min="5" max="100" value="62" step="1">
+            <button class="run-button" id="run-trial" type="button"><span>Run same pulse</span><span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+
+        <aside class="reading-panel" aria-labelledby="reading-title">
+          <div class="panel-kicker">What the cut contains</div>
+          <div class="reading-index"><span id="layer-index">00</span><span>/ 06</span></div>
+          <h3 id="reading-title">Connectome node</h3>
+          <p id="layer-description">The cell is replaced by a point with membrane voltage and synaptic conductance. Morphology, photochemistry and intracellular history are folded into fitted parameters and input.</p>
+
+          <dl class="reading-data">
+            <div><dt>Represented state</dt><dd id="represented-state">V(t), g(t)</dd></div>
+            <div><dt>Evidence status</dt><dd><span class="evidence-badge evidence-model" id="evidence-status">model specification</span></dd></div>
+            <div><dt>Boundary move</dt><dd id="boundary-move">Cell → node</dd></div>
+          </dl>
+
+          <div class="question-box">
+            <span>The unresolved question</span>
+            <p id="layer-question">Is the computation in the neurone, or in the modeller’s decision to ignore everything below the node?</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="trace-section" aria-labelledby="trace-title">
+      <div class="section-heading compact">
+        <div>
+          <div class="eyebrow">Same observable, changing ontology</div>
+          <h2 id="trace-title">A matched spike train does not identify its mechanism</h2>
+        </div>
+        <p id="trace-explanation">At this resolution, the fitted point model is the entire causal story available to the observer.</p>
+      </div>
+
+      <div class="trace-grid">
+        <article class="trace-card">
+          <header><span>Boundary output</span><strong>Axonal voltage</strong></header>
+          <svg class="trace" viewBox="0 0 680 160" role="img" aria-label="Axonal spike trace">
+            <line x1="18" y1="132" x2="662" y2="132"/>
+            <line x1="18" y1="22" x2="18" y2="132"/>
+            <path id="output-trace" d=""/>
+          </svg>
+          <footer><span>0 ms</span><span>2,400 ms</span></footer>
+        </article>
+        <article class="trace-card hidden-state-card">
+          <header><span>State excluded at lower cuts</span><strong id="hidden-trace-label">None represented</strong></header>
+          <svg class="trace hidden-trace" viewBox="0 0 680 160" role="img" aria-label="Internal state trace">
+            <line x1="18" y1="132" x2="662" y2="132"/>
+            <line x1="18" y1="22" x2="18" y2="132"/>
+            <path id="hidden-state-trace" d=""/>
+          </svg>
+          <footer><span>stimulus</span><span id="hidden-state-note">outside the model</span></footer>
+        </article>
+      </div>
+    </section>
+
+    <section class="comparison" aria-labelledby="comparison-title">
+      <div class="comparison-copy">
+        <div class="eyebrow">The asymmetry</div>
+        <h2 id="comparison-title">A whole brain can be cheaper to specify than one living cell.</h2>
+        <p>The whole-fly implementation begins after an enormous act of collapse: roughly 50 million anatomical chemical synapses become about 15 million weighted connections, and each neurone becomes two dynamic variables. Applying the same representational generosity to one mammalian neurone immediately outruns any public, simultaneous dataset.</p>
+        <p class="qualification">“Cheaper” here means fewer represented state variables, not fewer measurements, less labour or a biologically simpler organism.</p>
+      </div>
+      <div class="comparison-metrics" aria-label="Representation comparison">
+        <div class="metric-card">
+          <span>Whole-fly hardware model</span>
+          <strong>≈140,000</strong>
+          <small>point neurones</small>
+        </div>
+        <div class="metric-card">
+          <span>Per modelled neurone</span>
+          <strong>2</strong>
+          <small>dynamic variables: V, g</small>
+        </div>
+        <div class="metric-card accent">
+          <span>This single living neurone</span>
+          <strong>unclosed</strong>
+          <small>no complete public state vector</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="ledger" aria-labelledby="ledger-title">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">Evidence ledger</div>
+          <h2 id="ledger-title">What is measured, borrowed or unresolved</h2>
+        </div>
+        <p>This composite is deliberately honest about provenance. “Public data exists” is not the same as “these variables were measured together in this cell.”</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Layer</th><th>What can be grounded publicly</th><th>Status in this specimen</th><th>What remains missing</th></tr></thead>
+          <tbody>
+            <tr><td>Connectome node</td><td>Weights, delays and point-neurone equations used in the fly hardware model</td><td><span class="evidence-badge evidence-model">exact abstraction</span></td><td>Everything below the chosen node boundary</td></tr>
+            <tr><td>Morphoelectric</td><td>M1 morphology, membrane physiology, channel/transcript profiles and public compartmental models</td><td><span class="evidence-badge evidence-cell">M1 / ipRGC</span></td><td>One complete morphology-to-channel map for a living cell</td></tr>
+            <tr><td>Intrinsic photoreception</td><td>Melanopsin-driven intrinsic photocurrent; M1 Gq/PLC and TRPC6/7 pathway</td><td><span class="evidence-badge evidence-cell">M1 / ipRGC</span></td><td>Simultaneous molecular state and whole-cell geometry</td></tr>
+            <tr><td>Biochemical state</td><td>Subtype-specific transduction, calcium dependence and adaptation mechanisms</td><td><span class="evidence-badge evidence-cell">M1 / ipRGC</span></td><td>Time-resolved concentration fields throughout this cell</td></tr>
+            <tr><td>Intracellular traffic</td><td>Microtubule polarity, mitochondrial motility, RNA and vesicle transport in neurones</td><td><span class="evidence-badge evidence-general">neurone-general</span></td><td>M1-specific organelle trajectories and molecular cargo history</td></tr>
+            <tr><td>Intracellular light response</td><td>Endogenous chromophores and light-sensitive mitochondrial/redox pathways in neural tissue</td><td><span class="evidence-badge evidence-frontier">frontier</span></td><td>Physiological contribution under intact M1 retinal illumination</td></tr>
+            <tr><td>Living tissue</td><td>Glial, extracellular, vascular and network coupling measured across retinal preparations</td><td><span class="evidence-badge evidence-retina">retinal context</span></td><td>A simultaneous multi-scale record with the cell kept alive</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="sources" aria-labelledby="sources-title">
+      <div>
+        <div class="eyebrow">Public record</div>
+        <h2 id="sources-title">Open points of entry</h2>
+      </div>
+      <div class="source-grid">
+        <a href="https://www.nature.com/articles/s41586-024-07558-y" target="_blank" rel="noreferrer"><span>FlyWire Consortium · 2024</span><strong>Whole adult fly brain connectome</strong></a>
+        <a href="https://arxiv.org/abs/2508.16792" target="_blank" rel="noreferrer"><span>Dykstra et al. · preprint</span><strong>Fly-brain model on Loihi 2</strong></a>
+        <a href="https://github.com/ModelDBRepository/267026" target="_blank" rel="noreferrer"><span>ModelDB 267026</span><strong>M1 and M4 ipRGC models</strong></a>
+        <a href="https://pubmed.ncbi.nlm.nih.gov/36103830/" target="_blank" rel="noreferrer"><span>Huang et al. · 2022</span><strong>Retinal Patch-seq: form, function, transcriptome</strong></a>
+        <a href="https://elifesciences.org/articles/80749" target="_blank" rel="noreferrer"><span>Contreras et al. · 2023</span><strong>Divergent melanopsin pathways</strong></a>
+        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6742099/" target="_blank" rel="noreferrer"><span>Stepanova et al. · 2003</span><strong>Microtubule growth in cultured neurones</strong></a>
+        <a href="https://pubmed.ncbi.nlm.nih.gov/15557336/" target="_blank" rel="noreferrer"><span>Wong-Riley et al. · 2005</span><strong>Light and cytochrome-c oxidase</strong></a>
+        <a href="https://pubmed.ncbi.nlm.nih.gov/34380016/" target="_blank" rel="noreferrer"><span>Beniaguev et al. · 2021</span><strong>Single-neurone complexity benchmark</strong></a>
+      </div>
+      <p class="source-note">The intracellular-light layer does not claim that every organelle is a photoreceptor, or that mitochondrial photobiomodulation has been parameterised in M1 ipRGCs. It marks a category error in the opposite direction: light-responsive intracellular chemistry cannot be assumed absent merely because it lies below a membrane-and-spike model.</p>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <p>One neurone, many boundaries · a test of observer-selected resolution</p>
+    <p>Static, dependency-free and inspectable</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
