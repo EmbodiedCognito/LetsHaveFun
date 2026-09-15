@@ -1,4 +1,4 @@
-# One neurone, many boundaries
+# One neuron, many boundaries
 
 An experimental bench for an awkward question: can the whole-fly connectome trick—compressing each cell into an effective unit—be applied to one neurone, and what does that operation erase?
 
