@@ -1,271 +1,327 @@
-const layers = [
-  {
-    title: "Connectome node",
-    description: "The cell is replaced by a point with membrane voltage and synaptic conductance. Morphology, photochemistry and intracellular history are folded into fitted parameters and input.",
-    state: "V(t), g(t)",
-    evidence: "model specification",
-    evidenceClass: "evidence-model",
-    boundary: "Cell → node",
-    question: "Is the computation in the neurone, or in the modeller’s decision to ignore everything below the node?",
-    input: "fitted current",
-    hiddenLabel: "None represented",
-    hiddenNote: "outside the model",
-    traceText: "At this resolution, the fitted point model is the entire causal story available to the observer.",
-    runResult: "Output recorded"
-  },
-  {
-    title: "Morphoelectric cell",
-    description: "Soma, axon and branching dendrites return. Voltage, channel density and synaptic impact can now vary by location; a ‘single’ membrane voltage becomes a field over changing geometry.",
-    state: "V(x,t), channels, cable geometry",
-    evidence: "M1 / ipRGC",
-    evidenceClass: "evidence-cell",
-    boundary: "Node → excitable arbor",
-    question: "If different dendritic regions transform input differently, what licensed the point model to call the whole cell one unit?",
-    input: "distributed current",
-    hiddenLabel: "Distributed voltage",
-    hiddenNote: "collapsed into V(t) below this cut",
-    traceText: "The terminal spike trace can still match after spatial membrane dynamics are compressed into effective parameters.",
-    runResult: "Spatial state active"
-  },
-  {
-    title: "Intrinsic photoreception",
-    description: "This is not merely a neuron receiving visual input. Melanopsin makes the ipRGC itself a photoreceptor; light initiates a cell-intrinsic Gq/PLC pathway and M1 signalling through TRPC6/7 channels.",
-    state: "photons, melanopsin, photocurrent",
-    evidence: "M1 / ipRGC",
-    evidenceClass: "evidence-cell",
-    boundary: "Input current → photon capture",
-    question: "When the input apparatus is distributed through the cell itself, where does ‘pre-processing’ end and neuronal computation begin?",
-    input: "photons at membrane",
-    hiddenLabel: "Melanopsin activation",
-    hiddenNote: "slow state persists after the pulse",
-    traceText: "A point model can reproduce the spike train by fitting an injected current, while erasing that the cell sensed light itself.",
-    runResult: "Intrinsic photocurrent"
-  },
-  {
-    title: "Biochemical state",
-    description: "Receptor activation opens a changing intracellular cascade: G-protein and PLC signalling, calcium, channel modulation, adaptation and trafficking. The state has multiple timescales and remembers prior illumination.",
-    state: "Gq/PLC, Ca²⁺, adaptation, trafficking",
-    evidence: "M1 / ipRGC",
-    evidenceClass: "evidence-cell",
-    boundary: "Current → molecular cascade",
-    question: "If molecular state changes the meaning of the next photon minutes later, is memory confined to synaptic weights?",
-    input: "photon history",
-    hiddenLabel: "Calcium + adaptation",
-    hiddenNote: "history-dependent internal state",
-    traceText: "Matching spikes at the axon does not identify the biochemical history that made the next response possible.",
-    runResult: "Cascade evolving"
-  },
-  {
-    title: "Intracellular traffic",
-    description: "Microtubules, mitochondria, vesicles and local RNA are mobile constraints, not inert scaffolding. Their positions alter energy supply, receptor availability and the future electrical response.",
-    state: "cytoskeleton, organelles, cargo transport",
-    evidence: "neurone-general",
-    evidenceClass: "evidence-general",
-    boundary: "Biochemistry → material logistics",
-    question: "Does computation exclude the transport system that continually rebuilds the apparatus doing the alleged computation?",
-    input: "photons + material state",
-    hiddenLabel: "Organelle + cargo state",
-    hiddenNote: "borrowed from neurone-general evidence",
-    traceText: "This layer is empirically real in neurones but not jointly measured and parameterised for the displayed M1 cell.",
-    runResult: "Cargo state exposed"
-  },
-  {
-    title: "Intracellular light response",
-    description: "Light sensitivity is not exhausted by membrane opsins. Endogenous chromophores, including mitochondrial and redox-linked absorbers, can change intracellular state under illumination. Their intact-retina contribution here is unresolved.",
-    state: "chromophores, redox state, metabolism",
-    evidence: "frontier",
-    evidenceClass: "evidence-frontier",
-    boundary: "Photoreceptor → photosensitive cell",
-    question: "If illumination can perturb intracellular metabolism directly, which light effects are signal, context, damage or computation?",
-    input: "wavelength × intracellular state",
-    hiddenLabel: "Chromophore / redox response",
-    hiddenNote: "real mechanism; M1 effect unquantified",
-    traceText: "The layer is included explicitly and conservatively: endogenous intracellular photosensitivity is real; its physiological weight in one intact M1 ipRGC is not yet known.",
-    runResult: "Optical state unresolved"
-  },
-  {
-    title: "Living tissue",
-    description: "The cell remains coupled to glia, extracellular ions, blood flow, metabolism, neighbouring retinal circuits and developmental history. The boundary now encloses a tissue process, not an isolated object.",
-    state: "cell + extracellular + glial + vascular fields",
-    evidence: "retinal context",
-    evidenceClass: "evidence-retina",
-    boundary: "Isolated cell → living retina",
-    question: "At what boundary does adding causally relevant context stop revealing the system and start changing the question?",
-    input: "light within a living retina",
-    hiddenLabel: "Coupled tissue state",
-    hiddenNote: "no simultaneous complete record",
-    traceText: "No public dataset closes this state vector. The unmeasured coupling is not proof of mysticism; it is a limit on claims of computational completeness.",
-    runResult: "Tissue coupling visible"
+import { simulateM1 } from "./model/m1-electrophysiology.js";
+import { parseSWC, projectMorphology, swcSummary } from "./model/swc.js";
+
+const morphologyCanvas = document.querySelector("#morphology-canvas");
+const traceCanvas = document.querySelector("#trace-canvas");
+const morphologyLoading = document.querySelector("#morphology-loading");
+const projectionControls = [...document.querySelectorAll("[data-projection]")];
+const traceControls = [...document.querySelectorAll("[data-trace]")];
+const depthColour = document.querySelector("#depth-colour");
+const showSoma = document.querySelector("#show-soma");
+const showOmissions = document.querySelector("#show-omissions");
+const omissionTags = document.querySelector("#omission-tags");
+const horizontalAxis = document.querySelector("#horizontal-axis");
+const verticalAxis = document.querySelector("#vertical-axis");
+const extentReadout = document.querySelector("#extent-readout");
+const nodeCount = document.querySelector("#node-count");
+const currentInput = document.querySelector("#applied-current");
+const currentOutput = document.querySelector("#current-output");
+const runButton = document.querySelector("#run-model");
+const traceYAxis = document.querySelector("#trace-y-axis");
+const traceLegend = document.querySelector("#trace-legend");
+const spikeCount = document.querySelector("#spike-count");
+const peakVoltage = document.querySelector("#peak-voltage");
+const finalVoltage = document.querySelector("#final-voltage");
+
+const colours = {
+  voltage: "#77f2c1",
+  sodium: "#74d9ee",
+  potassium: "#ffc66c",
+  calcium: "#b9a1ff",
+  leak: "#ff8c76",
+  m: "#77f2c1",
+  h: "#74d9ee",
+  n: "#ffc66c",
+  r: "#b9a1ff",
+  f: "#ff8c76",
+};
+
+let morphology = null;
+let activeProjection = "xy";
+let activeTrace = "voltage";
+let latestSimulation = null;
+
+function prepareCanvas(canvas) {
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.max(1, Math.round(rect.width));
+  const height = Math.max(1, Math.round(rect.height));
+  if (canvas.width !== Math.round(width * ratio) || canvas.height !== Math.round(height * ratio)) {
+    canvas.width = Math.round(width * ratio);
+    canvas.height = Math.round(height * ratio);
   }
-];
-
-const body = document.body;
-const buttons = [...document.querySelectorAll(".layer-button")];
-const layerItems = [...document.querySelectorAll(".layer-item")];
-const exactItems = [...document.querySelectorAll(".exact-layer")];
-const layerIndex = document.querySelector("#layer-index");
-const readingTitle = document.querySelector("#reading-title");
-const layerDescription = document.querySelector("#layer-description");
-const representedState = document.querySelector("#represented-state");
-const evidenceStatus = document.querySelector("#evidence-status");
-const boundaryMove = document.querySelector("#boundary-move");
-const layerQuestion = document.querySelector("#layer-question");
-const inputLabel = document.querySelector("#input-label");
-const traceExplanation = document.querySelector("#trace-explanation");
-const hiddenTraceLabel = document.querySelector("#hidden-trace-label");
-const hiddenStateNote = document.querySelector("#hidden-state-note");
-const hiddenStateCard = document.querySelector(".hidden-state-card");
-const lightInput = document.querySelector("#light-level");
-const lightOutput = document.querySelector("#light-output");
-const runButton = document.querySelector("#run-trial");
-const trialStatus = document.querySelector("#trial-status");
-const outputTrace = document.querySelector("#output-trace");
-const hiddenStateTrace = document.querySelector("#hidden-state-trace");
-
-let activeLayer = 0;
-let trialTimer;
-
-function samplePath(pointCount, valueAt) {
-  const left = 18;
-  const right = 662;
-  const baseline = 132;
-  const commands = [];
-
-  for (let i = 0; i < pointCount; i += 1) {
-    const t = i / (pointCount - 1);
-    const x = left + t * (right - left);
-    const normalised = Math.max(0, Math.min(1, valueAt(t)));
-    const y = baseline - normalised * 102;
-    commands.push(`${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`);
-  }
-
-  return commands.join(" ");
+  const context = canvas.getContext("2d");
+  context.setTransform(ratio, 0, 0, ratio, 0, 0);
+  context.clearRect(0, 0, width, height);
+  return { context, width, height };
 }
 
-function spikeShape(t, centre, width = 0.012) {
-  const distance = Math.abs(t - centre);
-  if (distance > width) return 0;
-  const phase = distance / width;
-  return Math.pow(1 - phase, 2);
-}
-
-function renderTraces() {
-  const flux = Number(lightInput.value) / 100;
-  const count = Math.max(1, Math.round(1 + flux * 5));
-  const first = 0.25;
-  const interval = count > 1 ? 0.54 / (count - 1) : 0;
-  const spikes = Array.from({ length: count }, (_, index) => first + index * interval);
-
-  outputTrace.setAttribute("d", samplePath(360, (t) => {
-    const stimulusRise = t > 0.18 && t < 0.88 ? .055 + flux * .035 : .02;
-    const ripple = Math.sin(t * 36) * .012;
-    const spike = Math.max(...spikes.map((centre) => spikeShape(t, centre)));
-    return stimulusRise + ripple + spike * .94;
-  }));
-
-  if (activeLayer === 0) {
-    hiddenStateTrace.setAttribute("d", "M18,132 L662,132");
-    return;
+function drawGrid(context, width, height, padding) {
+  context.save();
+  context.strokeStyle = "rgba(108, 151, 138, .10)";
+  context.lineWidth = 1;
+  const columns = 8;
+  const rows = 6;
+  for (let index = 0; index <= columns; index += 1) {
+    const x = padding.left + ((width - padding.left - padding.right) * index) / columns;
+    context.beginPath();
+    context.moveTo(x, padding.top);
+    context.lineTo(x, height - padding.bottom);
+    context.stroke();
   }
-
-  hiddenStateTrace.setAttribute("d", samplePath(260, (t) => {
-    if (activeLayer === 1) {
-      const wave = Math.exp(-Math.pow((t - .46) / .18, 2));
-      return .08 + .55 * flux * wave + .07 * Math.sin(t * 30);
-    }
-    if (activeLayer === 2) {
-      const onset = t < .2 ? 0 : (1 - Math.exp(-(t - .2) * 9));
-      const decay = t < .74 ? 1 : Math.exp(-(t - .74) * 2.1);
-      return .05 + onset * decay * (.38 + .5 * flux);
-    }
-    if (activeLayer === 3) {
-      const envelope = t < .18 ? 0 : Math.exp(-(t - .38) * .85);
-      return .08 + Math.max(0, envelope) * (.26 + .24 * Math.sin((t - .18) * 38)) * flux;
-    }
-    if (activeLayer === 4) {
-      return .12 + .11 * Math.sin(t * 13) + .36 * t + .12 * Math.sin(t * 4.5);
-    }
-    if (activeLayer === 5) {
-      const rise = t < .2 ? 0 : 1 - Math.exp(-(t - .2) * 4.3);
-      return .1 + rise * flux * .58 + .045 * Math.sin(t * 21);
-    }
-    const slowField = .16 + .28 * Math.sin(t * 5.2 - .7) + .32 * t;
-    return slowField + .06 * Math.sin(t * 33);
-  }));
+  for (let index = 0; index <= rows; index += 1) {
+    const y = padding.top + ((height - padding.top - padding.bottom) * index) / rows;
+    context.beginPath();
+    context.moveTo(padding.left, y);
+    context.lineTo(width - padding.right, y);
+    context.stroke();
+  }
+  context.restore();
 }
 
-function setLayer(nextLayer, announce = true) {
-  activeLayer = Math.max(0, Math.min(layers.length - 1, nextLayer));
-  const layer = layers[activeLayer];
-  body.dataset.layer = String(activeLayer);
+function depthColourFor(z, zMin, zMax) {
+  const fraction = zMax === zMin ? 0.5 : (z - zMin) / (zMax - zMin);
+  const hue = 170 + fraction * 105;
+  return `hsla(${hue}, 74%, 67%, .78)`;
+}
 
-  buttons.forEach((button, index) => {
-    const isActive = index === activeLayer;
-    button.classList.toggle("is-active", isActive);
-    button.setAttribute("aria-pressed", String(isActive));
+function drawMorphology() {
+  if (!morphology) return;
+  const { context, width, height } = prepareCanvas(morphologyCanvas);
+  const padding = { top: 30, right: 30, bottom: 30, left: 30 };
+  drawGrid(context, width, height, padding);
+
+  const projected = projectMorphology(morphology, activeProjection);
+  const horizontalValues = projected.nodes.map((node) => node.horizontal);
+  const verticalValues = projected.nodes.map((node) => node.vertical);
+  const hMin = Math.min(...horizontalValues);
+  const hMax = Math.max(...horizontalValues);
+  const vMin = Math.min(...verticalValues);
+  const vMax = Math.max(...verticalValues);
+  const zValues = morphology.nodes.map((node) => node.z);
+  const zMin = Math.min(...zValues);
+  const zMax = Math.max(...zValues);
+  const spanH = Math.max(1, hMax - hMin);
+  const spanV = Math.max(1, vMax - vMin);
+  const scale = Math.min(
+    (width - padding.left - padding.right) / spanH,
+    (height - padding.top - padding.bottom) / spanV,
+  );
+  const usedWidth = spanH * scale;
+  const usedHeight = spanV * scale;
+  const originX = padding.left + (width - padding.left - padding.right - usedWidth) / 2;
+  const originY = padding.top + (height - padding.top - padding.bottom - usedHeight) / 2;
+  const point = (node) => ({
+    x: originX + (node.horizontal - hMin) * scale,
+    y: originY + usedHeight - (node.vertical - vMin) * scale,
   });
 
-  layerItems.forEach((item) => {
-    item.classList.toggle("is-visible", Number(item.dataset.minLayer) <= activeLayer);
-  });
+  context.save();
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  for (const segment of projected.segments) {
+    if (!showSoma.checked && (segment.from.type === 1 || segment.to.type === 1)) continue;
+    const from = point(segment.from);
+    const to = point(segment.to);
+    const isSoma = segment.from.type === 1 || segment.to.type === 1;
+    context.strokeStyle = isSoma
+      ? "rgba(234, 247, 241, .96)"
+      : depthColour.checked
+        ? depthColourFor((segment.from.z + segment.to.z) / 2, zMin, zMax)
+        : "rgba(119, 242, 193, .72)";
+    context.lineWidth = isSoma ? 3 : 0.78;
+    context.beginPath();
+    context.moveTo(from.x, from.y);
+    context.lineTo(to.x, to.y);
+    context.stroke();
+  }
 
-  exactItems.forEach((item) => {
-    item.classList.toggle("is-visible", Number(item.dataset.exactLayer) === activeLayer);
-  });
+  if (showSoma.checked) {
+    const soma = projected.nodes.find((node) => node.type === 1);
+    if (soma) {
+      const centre = point(soma);
+      const radius = Math.max(5, soma.radius * scale);
+      const gradient = context.createRadialGradient(centre.x - radius * .25, centre.y - radius * .25, 1, centre.x, centre.y, radius);
+      gradient.addColorStop(0, "rgba(234, 247, 241, .98)");
+      gradient.addColorStop(.35, "rgba(119, 242, 193, .9)");
+      gradient.addColorStop(1, "rgba(119, 242, 193, .2)");
+      context.fillStyle = gradient;
+      context.beginPath();
+      context.arc(centre.x, centre.y, radius, 0, Math.PI * 2);
+      context.fill();
+    }
+  }
+  context.restore();
 
-  layerIndex.textContent = String(activeLayer).padStart(2, "0");
-  readingTitle.textContent = layer.title;
-  layerDescription.textContent = layer.description;
-  representedState.textContent = layer.state;
-  evidenceStatus.textContent = layer.evidence;
-  evidenceStatus.className = `evidence-badge ${layer.evidenceClass}`;
-  boundaryMove.textContent = layer.boundary;
-  layerQuestion.textContent = layer.question;
-  inputLabel.textContent = layer.input;
-  traceExplanation.textContent = layer.traceText;
-  hiddenTraceLabel.textContent = layer.hiddenLabel;
-  hiddenStateNote.textContent = layer.hiddenNote;
-  hiddenStateCard.classList.toggle("is-empty", activeLayer === 0);
-
-  if (announce) trialStatus.textContent = `Layer ${activeLayer} selected`;
-  renderTraces();
+  horizontalAxis.textContent = projected.horizontal;
+  verticalAxis.textContent = projected.vertical;
+  extentReadout.textContent = `${Math.round(spanH)} × ${Math.round(spanV)} µm`;
+  morphologyCanvas.setAttribute(
+    "aria-label",
+    `${activeProjection.toUpperCase()} projection of M1 ipRGC 070320Ac10; ${morphology.nodes.length} SWC nodes; axon and measured dendritic diameters absent`,
+  );
 }
 
-function runTrial() {
-  window.clearTimeout(trialTimer);
-  body.classList.remove("is-running");
-  void body.offsetWidth;
-  body.classList.add("is-running");
+function numericRange(seriesList, fixedRange = null) {
+  if (fixedRange) return fixedRange;
+  const values = seriesList.flatMap((series) => series.values);
+  const minimum = Math.min(...values);
+  const maximum = Math.max(...values);
+  const margin = Math.max((maximum - minimum) * 0.08, 0.01);
+  return [minimum - margin, maximum + margin];
+}
+
+function drawTrace() {
+  if (!latestSimulation) return;
+  const { context, width, height } = prepareCanvas(traceCanvas);
+  const padding = { top: 28, right: 22, bottom: 30, left: 44 };
+  drawGrid(context, width, height, padding);
+
+  let series;
+  let unit;
+  let fixedRange = null;
+  if (activeTrace === "currents") {
+    series = ["sodium", "potassium", "calcium", "leak"].map((name) => ({
+      name: `I${name === "potassium" ? "K" : name === "sodium" ? "Na" : name === "calcium" ? "Ca" : "L"}`,
+      values: latestSimulation.currents[name],
+      colour: colours[name],
+    }));
+    unit = "source current units";
+  } else if (activeTrace === "gates") {
+    series = ["m", "h", "n", "r", "f"].map((name) => ({ name, values: latestSimulation.gates[name], colour: colours[name] }));
+    unit = "open fraction";
+    fixedRange = [0, 1];
+  } else {
+    series = [{ name: "Vm", values: latestSimulation.voltageMV, colour: colours.voltage }];
+    unit = "mV";
+  }
+
+  const [minimum, maximum] = numericRange(series, fixedRange);
+  const tMax = latestSimulation.timeMs.at(-1);
+  const plotWidth = width - padding.left - padding.right;
+  const plotHeight = height - padding.top - padding.bottom;
+  const xAt = (time) => padding.left + (time / tMax) * plotWidth;
+  const yAt = (value) => padding.top + ((maximum - value) / (maximum - minimum || 1)) * plotHeight;
+
+  context.save();
+  context.font = "10px ui-monospace, SFMono-Regular, Menlo, monospace";
+  context.fillStyle = "rgba(140, 168, 159, .72)";
+  context.textAlign = "right";
+  context.textBaseline = "middle";
+  for (let index = 0; index <= 4; index += 1) {
+    const value = maximum - ((maximum - minimum) * index) / 4;
+    context.fillText(value.toFixed(activeTrace === "gates" ? 2 : 1), padding.left - 7, padding.top + (plotHeight * index) / 4);
+  }
+  context.textAlign = "center";
+  context.textBaseline = "top";
+  for (let index = 0; index <= 5; index += 1) {
+    const time = (tMax * index) / 5;
+    context.fillText(String(Math.round(time)), xAt(time), height - padding.bottom + 8);
+  }
+
+  for (const item of series) {
+    context.strokeStyle = item.colour;
+    context.lineWidth = series.length === 1 ? 1.45 : 1.05;
+    context.beginPath();
+    item.values.forEach((value, index) => {
+      const x = xAt(latestSimulation.timeMs[index]);
+      const y = yAt(value);
+      if (index === 0) context.moveTo(x, y);
+      else context.lineTo(x, y);
+    });
+    context.stroke();
+  }
+  context.restore();
+
+  traceYAxis.textContent = unit;
+  traceLegend.replaceChildren(
+    ...series.map((item) => {
+      const label = document.createElement("span");
+      const swatch = document.createElement("i");
+      swatch.style.setProperty("--series-colour", item.colour);
+      label.append(swatch, item.name);
+      return label;
+    }),
+  );
+  traceCanvas.setAttribute("aria-label", `${activeTrace} trace from the Stinchcombe M1 somatic model`);
+}
+
+function setPressed(buttons, activeButton) {
+  for (const button of buttons) {
+    const active = button === activeButton;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  }
+}
+
+function runSimulation() {
   runButton.disabled = true;
-  trialStatus.textContent = "Pulse in progress";
-
-  trialTimer = window.setTimeout(() => {
-    body.classList.remove("is-running");
-    runButton.disabled = false;
-    trialStatus.textContent = layers[activeLayer].runResult;
-  }, 2350);
+  runButton.firstChild.textContent = "Running… ";
+  requestAnimationFrame(() => {
+    window.setTimeout(() => {
+      latestSimulation = simulateM1({
+        currentPA: Number(currentInput.value),
+        durationMs: 500,
+        dtMs: 0.01,
+        initialVoltageMV: -30,
+        sampleEveryMs: 0.25,
+      });
+      const summary = latestSimulation.summary;
+      spikeCount.textContent = String(summary.spikeCount);
+      peakVoltage.textContent = `${summary.maximumVoltageMV.toFixed(1)} mV`;
+      finalVoltage.textContent = `${summary.finalVoltageMV.toFixed(1)} mV`;
+      drawTrace();
+      runButton.disabled = false;
+      runButton.firstChild.textContent = "Run 500 ms ";
+    }, 20);
+  });
 }
 
-buttons.forEach((button, index) => {
-  button.addEventListener("click", () => setLayer(index));
-  button.addEventListener("keydown", (event) => {
-    if (!["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft"].includes(event.key)) return;
-    event.preventDefault();
-    const direction = event.key === "ArrowDown" || event.key === "ArrowRight" ? 1 : -1;
-    const nextIndex = (index + direction + buttons.length) % buttons.length;
-    buttons[nextIndex].focus();
-    setLayer(nextIndex);
+projectionControls.forEach((button) => {
+  button.addEventListener("click", () => {
+    activeProjection = button.dataset.projection;
+    setPressed(projectionControls, button);
+    drawMorphology();
   });
 });
 
-lightInput.addEventListener("input", () => {
-  const value = Number(lightInput.value);
-  body.style.setProperty("--light-level", String(value / 100));
-  lightOutput.value = `${value}%`;
-  lightOutput.textContent = `${value}%`;
-  renderTraces();
+traceControls.forEach((button) => {
+  button.addEventListener("click", () => {
+    activeTrace = button.dataset.trace;
+    setPressed(traceControls, button);
+    drawTrace();
+  });
 });
 
-runButton.addEventListener("click", runTrial);
+[depthColour, showSoma].forEach((control) => control.addEventListener("change", drawMorphology));
+showOmissions.addEventListener("change", () => { omissionTags.hidden = !showOmissions.checked; });
+currentInput.addEventListener("input", () => {
+  currentOutput.value = `${currentInput.value} pA`;
+  currentOutput.textContent = `${currentInput.value} pA`;
+});
+runButton.addEventListener("click", runSimulation);
 
-setLayer(0, false);
+const resizeObserver = new ResizeObserver(() => {
+  drawMorphology();
+  drawTrace();
+});
+resizeObserver.observe(morphologyCanvas);
+resizeObserver.observe(traceCanvas);
+
+fetch("data/source/neuromorpho/070320Ac10.CNG.swc")
+  .then((response) => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.text();
+  })
+  .then((text) => {
+    morphology = parseSWC(text);
+    const summary = swcSummary(morphology);
+    nodeCount.textContent = summary.nodes.toLocaleString("en-AU");
+    morphologyLoading.classList.add("is-hidden");
+    drawMorphology();
+  })
+  .catch((error) => {
+    morphologyLoading.textContent = `Could not load the SWC: ${error.message}. Serve this directory over HTTP.`;
+  });
+
+runSimulation();

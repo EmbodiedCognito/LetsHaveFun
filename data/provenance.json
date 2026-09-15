@@ -1,0 +1,201 @@
+{
+  "schema_version": "0.1.0",
+  "reference_model": {
+    "id": "m1-iprgc-composite-alpha-1",
+    "label": "Public-evidence M1 ipRGC reference model",
+    "species": "Mus musculus",
+    "cell_type": "M1 intrinsically photosensitive retinal ganglion cell",
+    "assembly_rule": "Every module retains its own specimen, preparation, measurement and inference boundary. A type-level join is never presented as a same-cell measurement.",
+    "state": "morphology and somatic electrophysiology attached; phototransduction and intracellular photosensitivity not yet attached"
+  },
+  "evidence_terms": {
+    "direct_specimen": "A measurement made on the named reconstructed cell.",
+    "m1_cohort": "A measurement or fit from independently sampled M1 cells.",
+    "iprgc_family": "Evidence from another ipRGC type or mixed ipRGC population.",
+    "retinal_neurone": "Evidence from another retinal neurone class.",
+    "neurone_general": "Evidence imported from neurones generally.",
+    "frontier": "A demonstrated mechanism whose magnitude or role in an intact M1 ipRGC is unresolved."
+  },
+  "modules": [
+    {
+      "id": "morphology.m1.070320Ac10",
+      "kind": "morphology",
+      "status": "attached",
+      "evidence_level": "direct_specimen",
+      "anchor_relation": "The geometry defines the reference specimen, but no other attached module was measured in this same cell.",
+      "specimen": {
+        "cell_name": "070320Ac10",
+        "neuromorpho_id": "NMO_251644",
+        "archive": "Schwartz",
+        "animal": "adult female mouse",
+        "strain": "PV-IRES-Cre;Ai14",
+        "region": "right retina, ganglion-cell layer",
+        "preparation": "ex vivo whole mount",
+        "stain": "Neurobiotin",
+        "imaging": "confocal microscopy, 40× oil objective",
+        "reconstruction": "Simple Neurite Tracer"
+      },
+      "public_files": [
+        {
+          "path": "data/source/neuromorpho/070320Ac10.CNG.swc",
+          "sha256": "22235986d64b86054a75a2263feb311a2cff2455c3ced248ef1156b129107a78",
+          "upstream_sha256": "71ce7e8aece637c788bd49fd2b851df1c572582ff6a3bbbb849a20f9294639df",
+          "source_url": "https://neuromorpho.org/dableFiles/schwartz/CNG%20version/070320Ac10.CNG.swc",
+          "sanitisation": "Removed a conversion-contact email address and contributor workstation path from the upstream header; all 3,758 geometry records are unchanged."
+        }
+      ],
+      "observed_or_preserved": [
+        "3-D dendritic skeleton",
+        "branch topology and angles",
+        "three-node soma representation",
+        "3758 SWC nodes",
+        "35 bifurcations and 72 branches reported by NeuroMorpho.Org",
+        "2937.81 µm total reported length",
+        "330.116 × 366.88 × 75.17 µm reported spatial extent"
+      ],
+      "not_observed_or_not_preserved": [
+        "axon",
+        "dendritic diameter",
+        "complete dendritic integrity (repository rating: Dendrites Moderate)",
+        "shrinkage correction",
+        "synapse locations",
+        "organelle positions"
+      ],
+      "standardisation_warning": "The 0.125 µm dendritic radius in the CNG SWC is a fixed placeholder. NeuroMorpho.Org marks the reconstruction as No Diameter; it must not be treated as measured calibre.",
+      "sources": [
+        {
+          "type": "dataset_record",
+          "citation": "NeuroMorpho.Org, cell 070320Ac10 (NMO_251644), Schwartz archive",
+          "url": "https://neuromorpho.org/neuron_info.jsp?neuron_name=070320Ac10",
+          "license": "CC BY 4.0"
+        },
+        {
+          "type": "primary_paper",
+          "citation": "Goetz J et al. (2022), Unified classification of mouse retinal ganglion cells using function, morphology, and gene expression, Cell Reports 40:111040",
+          "doi": "10.1016/j.celrep.2022.111040",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9364428/"
+        },
+        {
+          "type": "source_dataset",
+          "citation": "Schwartz G (2022), Traced Retinal Ganglion Cells – RGCtypes.org, Mendeley Data v1",
+          "doi": "10.17632/8f435gyybb.1",
+          "url": "https://data.mendeley.com/datasets/8f435gyybb/1",
+          "license": "CC BY 4.0"
+        }
+      ]
+    },
+    {
+      "id": "electrophysiology.m1.stinchcombe-2021",
+      "kind": "somatic_electrophysiology",
+      "status": "attached",
+      "evidence_level": "m1_cohort",
+      "anchor_relation": "Independent M1 cohorts; not the reconstructed 070320Ac10 specimen.",
+      "model_scope": {
+        "compartments": 1,
+        "state_variables": ["V", "m", "h", "n", "r", "f"],
+        "currents": ["voltage-gated sodium", "potassium", "voltage-gated calcium", "chloride leak", "applied current"],
+        "phototransduction_included": false,
+        "morphology_coupled": false,
+        "axon_included": false,
+        "implementation": "model/m1-electrophysiology.js"
+      },
+      "experimental_basis": {
+        "calcium_voltage_clamp_cells": 21,
+        "potassium_voltage_clamp_cells": 22,
+        "sodium_voltage_clamp_cells": 1,
+        "current_clamp_validation_cells": 17,
+        "notes": "The sodium-current cell had most dendrites removed to improve space clamp. The published fit represents a class-level local optimum and the paper reports substantial within-type variability."
+      },
+      "source_protocol": {
+        "applied_current_pA": 100,
+        "initial_voltage_mV": -30,
+        "duration_ms": 500,
+        "original_solver": "MATLAB ode23s"
+      },
+      "sources": [
+        {
+          "type": "primary_paper",
+          "citation": "Stinchcombe AR et al. (2021), M1-Type, but Not M4-Type, Melanopsin Ganglion Cells Are Physiologically Tuned to the Central Circadian Clock, Frontiers in Neuroscience 15:652996",
+          "doi": "10.3389/fnins.2021.652996",
+          "url": "https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2021.652996/full",
+          "license": "CC BY"
+        },
+        {
+          "type": "model_repository",
+          "citation": "ModelDB accession 267026",
+          "url": "https://modeldb.science/267026",
+          "code_url": "https://github.com/ModelDBRepository/267026/blob/main/ipRGCephys.m",
+          "code_blob_sha": "3feed43e7de8ffe8b00b04a796153fc96a251dc7",
+          "license": "No licence declared in the GitHub mirror as accessed 2026-09-15",
+          "reuse_note": "The upstream MATLAB file is not redistributed here. The JavaScript module is a new implementation of the published equations and numerical parameter values."
+        }
+      ]
+    },
+    {
+      "id": "phototransduction.melanopsin",
+      "kind": "intrinsic_phototransduction",
+      "status": "unattached",
+      "evidence_level": "m1_cohort",
+      "attachment_requirements": [
+        "select a kinetic model with stimulus units and adaptation state",
+        "declare whether photocurrent is somatic or distributed",
+        "keep rod/cone synaptic drive separate from melanopsin drive",
+        "validate irradiance-to-current and current-to-spike joins independently"
+      ]
+    },
+    {
+      "id": "intracellular_photosensitivity.registry",
+      "kind": "intracellular_photosensitivity",
+      "status": "unattached",
+      "evidence_level": "frontier",
+      "attachment_requirements": [
+        "represent wavelength-dependent absorption rather than reuse the melanopsin 480 nm control",
+        "locate each chromophore and optical path by compartment",
+        "separate signalling, metabolic modulation, heating and photodamage hypotheses",
+        "attach only mechanisms with a measurable state variable and falsifiable coupling to the M1 model"
+      ]
+    }
+  ],
+  "joins": [
+    {
+      "from": "morphology.m1.070320Ac10",
+      "to": "electrophysiology.m1.stinchcombe-2021",
+      "kind": "cell-type-level composite",
+      "implemented": true,
+      "mechanical_coupling": false,
+      "valid_claim": "A public M1 morphology and a public M1 somatic conductance model can coexist in one inspectable reference assembly.",
+      "invalid_claim": "The displayed conductances were measured in 070320Ac10 or are distributed over its arbor."
+    }
+  ],
+  "morphology_candidate_audit": [
+    {
+      "cell_name": "080119Ac1",
+      "neuromorpho_id": "NMO_251639",
+      "domain": "Dendrites, Soma, No Axon",
+      "nodes": 2879,
+      "reported_length_um": 1401.1,
+      "reported_bifurcations": 14,
+      "selected": false
+    },
+    {
+      "cell_name": "070320Ac10",
+      "neuromorpho_id": "NMO_251644",
+      "domain": "Dendrites, Soma, No Axon",
+      "nodes": 3758,
+      "reported_length_um": 2937.81,
+      "reported_bifurcations": 35,
+      "selected": true,
+      "selection_reason": "Most extensive of the three public M1 reconstructions in the archive and preserves a soma."
+    },
+    {
+      "cell_name": "042419Ac7",
+      "neuromorpho_id": "NMO_251705",
+      "domain": "Dendrites, No Soma, No Axon",
+      "nodes": 2623,
+      "reported_length_um": 1490.76,
+      "reported_bifurcations": 27,
+      "selected": false
+    }
+  ],
+  "accessed": "2026-09-15"
+}
